@@ -1,0 +1,29 @@
+kind = "web"
+previewPath = "/"
+title = "MindCare"
+description = "A senior-friendly cognitive support and memory assistance application for patients and family caregivers, with memory books, reminders, games, caregiver monitoring, and AI assistance."
+version = "1.0.0"
+id = "artifacts/mindcare"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/", "/mindcare-api" ]
+localPort = 24730
+
+[services.development]
+run = "pnpm --filter @workspace/mindcare run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/mindcare", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/mindcare/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24730"
+BASE_PATH = "/"
+VITE_API_BASE_URL = "/mindcare-api"

@@ -1,0 +1,1 @@
+- [MindCare deployment persistence](mindcare-deployment.md) — preserve Mongo-shaped route contracts with JSON documents in production Postgres.
