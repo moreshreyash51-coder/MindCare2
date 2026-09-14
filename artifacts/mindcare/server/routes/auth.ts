@@ -4,7 +4,13 @@ import jwt from 'jsonwebtoken';
 import { db } from '../db/schema.js';
 
 export const authRouter = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'mindcare_super_secret_jwt_key_2026';
+const JWT_SECRET =
+  process.env.JWT_SECRET ||
+  (process.env.NODE_ENV === 'production' || process.env.VERCEL
+    ? (() => {
+        throw new Error('JWT_SECRET must be configured in production');
+      })()
+    : 'mindcare_local_development_secret');
 
 // POST /api/auth/register
 authRouter.post('/register', async (req: Request, res: Response): Promise<void> => {

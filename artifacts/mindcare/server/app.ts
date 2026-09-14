@@ -1,6 +1,5 @@
 import express, { type Express } from 'express';
 import path from 'node:path';
-import { createServer as createViteServer } from 'vite';
 import { aiRouter } from './routes/ai.js';
 import { authRouter } from './routes/auth.js';
 import { gamesRouter } from './routes/games.js';
@@ -58,6 +57,25 @@ export async function createApp(options: { serveFrontend?: boolean } = {}): Prom
   // Vercel may invoke a catch-all function with the /api prefix removed.
   // These mounts keep the same API routes working in both invocation modes.
   if (process.env.VERCEL) {
+    app.get('/health', (_req, res) => {
+      res.json({
+        status: 'ok',
+        service: 'MindCare API',
+        timestamp: new Date().toISOString(),
+        aiConfigured: Boolean(process.env.GEMINI_API_KEY),
+        environment: process.env.NODE_ENV || 'development',
+      });
+    });
+    app.get('/db/status', async (_req, res) => {
+      try {
+        res.json(await getDatabaseStatus());
+      } catch (error) {
+        res.status(500).json({
+          error: 'Failed to retrieve database status',
+          details: error instanceof Error ? error.message : 'Unknown error',
+        });
+      }
+    });
     app.use('/auth', authRouter);
     app.use('/patients', patientsRouter);
     app.use('/memories', memoriesRouter);
@@ -139,6 +157,7 @@ export async function createDevelopmentApp() {
   app.all('/mindcare-api/*', (_req, res) => res.status(404).json({ error: 'API endpoint not found' }));
 
   if (process.env.NODE_ENV !== 'production') {
+    const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
