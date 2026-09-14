@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "pnpm --filter @workspace/mindcare run build:vercel",
-  "outputDirectory": "artifacts/mindcare/dist/public",
+  "buildCommand": "pnpm --filter @workspace/mindcare run build:vercel && rm -rf dist/public && mkdir -p dist && cp -a artifacts/mindcare/dist/public dist/public",
+  "outputDirectory": "dist/public",
   "functions": {
     "api/index.ts": {
       "runtime": "nodejs22.x",

@@ -51,13 +51,13 @@ MindCare is configured as one Vercel project. The repository root has a Vercel c
 3. Set the build command to:
 
    ```bash
-   pnpm --filter @workspace/mindcare run build:vercel
+   pnpm --filter @workspace/mindcare run build:vercel && rm -rf dist/public && mkdir -p dist && cp -a artifacts/mindcare/dist/public dist/public
    ```
 
 4. Set the output directory to:
 
    ```text
-   artifacts/mindcare/dist/public
+   dist/public
    ```
 
 5. If you intentionally set the Vercel Root Directory to `artifacts/mindcare`, use the nested configuration instead:
