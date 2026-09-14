@@ -1,4 +1,4 @@
-import { createApp } from '../artifacts/mindcare/server/app.js';
+import { createApp } from '../artifacts/mindcare/server/app';
 
 let appPromise: ReturnType<typeof createApp> | undefined;
 
