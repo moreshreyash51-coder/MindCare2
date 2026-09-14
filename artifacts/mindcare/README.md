@@ -44,24 +44,31 @@ Change the demo passwords before using a public deployment.
 
 ## Deploying the full app to Vercel
 
-MindCare is configured as one Vercel project. The Vite frontend is emitted to `dist/public`, and `api/index.ts` exposes the existing Express routes as a Vercel serverless function.
+MindCare is configured as one Vercel project. The repository root has a Vercel configuration that explicitly builds `@workspace/mindcare`, emits the frontend to `artifacts/mindcare/dist/public`, and exposes the existing Express routes through the root `api/index.ts` serverless function. A second configuration exists inside `artifacts/mindcare` for deployments where that directory is selected as the Vercel Root Directory.
 
-1. Import the repository into Vercel and set the project root to `artifacts/mindcare` if deploying from the workspace monorepo.
+1. Import the repository into Vercel. The safest setting is to leave the Vercel Root Directory at the repository root. Do not select `artifacts/api-server`; that is a separate API artifact.
 2. Use the detected `pnpm` package manager.
 3. Set the build command to:
 
    ```bash
-   pnpm run build:vercel
+   pnpm --filter @workspace/mindcare run build:vercel
    ```
 
 4. Set the output directory to:
 
    ```text
-   dist/public
+   artifacts/mindcare/dist/public
    ```
 
-5. Add a Neon Postgres database through the Vercel Marketplace and expose its connection string as `POSTGRES_URL` (or `DATABASE_URL`).
-6. Add the following environment variables in Vercel:
+5. If you intentionally set the Vercel Root Directory to `artifacts/mindcare`, use the nested configuration instead:
+
+   ```text
+   Build command: npm run build:vercel
+   Output directory: dist/public
+   ```
+
+6. Add a Neon Postgres database through the Vercel Marketplace and expose its connection string as `POSTGRES_URL` (or `DATABASE_URL`).
+7. Add the following environment variables in Vercel:
 
    ```text
    POSTGRES_URL=<Neon connection string>
@@ -70,7 +77,7 @@ MindCare is configured as one Vercel project. The Vite frontend is emitted to `d
    ```
 
    Do not commit these values or put them in the frontend.
-7. Deploy. Vercel rewrites `/api/*` to the Express function and all non-API routes to the SPA entrypoint.
+8. Deploy. Vercel rewrites `/api/*` to the MindCare Express function and all non-API routes to the SPA entrypoint.
 
 On the first request, MindCare creates the `mindcare_documents` table and seeds the same demo records used by local development. The Postgres adapter keeps the existing route response shapes and stores each feature collection as JSON documents, so the frontend behavior remains unchanged.
 
